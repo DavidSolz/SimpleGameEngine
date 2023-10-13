@@ -30,3 +30,14 @@
 *.exe
 *.out
 *.app
+
+# Directories
+build/googletest
+build/CMakeFiles
+build/src
+build/tests
+
+# Files
+build/CMakeCache.txt
+build/cmake_install.cmake
+build/Makefile
