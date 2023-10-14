@@ -6,7 +6,7 @@ find_package(glfw3 REQUIRED)
 file(GLOB_RECURSE SOURCES LIST_DIRECTORIES true  *.cpp *.c)
 file(GLOB_RECURSE HEADERS *.hpp *.h)
 
-add_executable(${BINARY}_run ${SOURCES} )
+add_executable(${BINARY}_run ${SOURCES})
 
 add_library(${BINARY}_lib SHARED ${SOURCES} ${HEADERS})
 
