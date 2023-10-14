@@ -36,6 +36,7 @@ build/googletest
 build/CMakeFiles
 build/src
 build/tests
+.vscode
 
 # Files
 build/CMakeCache.txt

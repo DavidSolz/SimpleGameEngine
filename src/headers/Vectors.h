@@ -3,8 +3,6 @@
 
 #include <cmath>
 
-#pragma once
-
 struct Vector2{
     float x;
     float y;
@@ -45,7 +43,7 @@ struct Vector2{
         return sqrt(x*x+y*y);
     }
 
-    virtual float Distance(const Vector2 &vector){
+    float Distance(const Vector2 &vector){
         float deltaX = vector.x-x;
         float deltaY = vector.y-y;
         return sqrt(deltaX*deltaX + deltaY*deltaY);
@@ -96,6 +94,14 @@ struct Vector3 : public Vector2{
         return Vector3(x-vector.x, y-vector.y, z-vector.z);
     }
 
+    bool operator==(const Vector3 &vector){
+        return x==vector.x && y==vector.y && z==vector.z;
+    }
+
+    bool operator!=(const Vector3 &vector){
+        return x!=vector.x || y!=vector.y || z!=vector.z;
+    }
+
     float Dot(const Vector3 &vector){
         return x*vector.x + y*vector.y + z*vector.z;
     }
@@ -107,7 +113,7 @@ struct Vector3 : public Vector2{
         return sqrt(deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ);
     }
 
-    float Magnitude(){
+     float Magnitude(){
         return sqrt(x*x+y*y+z*z);
     }
 

@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "Vectors.h"
+#include "headers/Vectors.h"
 
 int width=640;
 int height=480;
