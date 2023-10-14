@@ -36,6 +36,7 @@ build/googletest
 build/CMakeFiles
 build/src
 build/tests
+build/.cmake
 
 # Files
 build/CMakeCache.txt

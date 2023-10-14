@@ -13,7 +13,7 @@ ExternalProject_Add(
     googletest
     PREFIX "${CMAKE_BINARY_DIR}/googletest"
     GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG release-1.11.0 
+    GIT_TAG release-1.11.0
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${GTEST_INSTALL_PREFIX}
 )
 
