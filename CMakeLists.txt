@@ -27,7 +27,5 @@ add_library(gtest_main INTERFACE IMPORTED GLOBAL)
 add_dependencies(gtest_main googletest)
 target_link_libraries(gtest_main INTERFACE ${GTEST_INSTALL_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_main${CMAKE_STATIC_LIBRARY_SUFFIX})
 
-include_directories(src)
-
 add_subdirectory(src)
 add_subdirectory(tests)

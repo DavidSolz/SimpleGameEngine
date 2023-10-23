@@ -1,7 +1,5 @@
 
-#include <GLFW/glfw3.h>
 #include <stdlib.h>
-#include <vector>
 #include <stdio.h>
 
 #ifdef __APPLE__
@@ -10,145 +8,128 @@
     #include <GL/gl.h>
 #endif
 
-#include "Vector2.h"
-#include "Vector3.h"
 
-#include "WadReader.h"
+int width=640, height=480;
+int framebufferWidth, framebufferHeight;
 
-int width=640;
-int height=480;
+float moveSpeed = 0.2f;
 
-double offset = 0.01f;
+#include "QuadTree.h"
+#include "Camera.h"
 
-float zoomLevel = 1.0f;
-float scrollSpeed = 0.1f;
+Camera camera;
 
-double mouseX = 0, mouseY = 0;
+QuadTree *tree;
 
-std::vector<Vector2> points;
-
-void DrawLines();
-void DrawPoints();
-void UpdateProjectionMatrix();
-
-static void cursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
-void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+void WindowResizeCallback(GLFWwindow *window, int w, int h);
+void WindowMouseCallback(GLFWwindow *window, int button, int action, int mods);
+void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 int main(int argc, char *argv[]){
 
-    WadReader reader("ACHERON.WAD");
+    tree = new QuadTree(2.0f, 2.0f);
 
-    reader.ReadChunks();
+    if(!glfwInit()){
+        printf("Cannot initialize GLFW\n");
+        return -1;
+    }
 
-    // if(!glfwInit()){
-    //     printf("Cannot initialize GLFW\n");
-    //     return -1;
-    // }
+    GLFWwindow *window = glfwCreateWindow(width, height, "Title", NULL, NULL);
 
-    // GLFWwindow *window = glfwCreateWindow(width, height, "Title", NULL, NULL);
+    if(!window){
+        glfwTerminate();
+        printf("Cannot create GLFW window\n");
+        return -1;
+    }
 
-    // if(!window){
-    //     glfwTerminate();
-    //     printf("Cannot create GLFW window\n");
-    //     return -1;
-    // }
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1); //wlacz v-sync
 
-    // const GLubyte *vendor = glGetString(GL_VENDOR);
-    // const GLubyte *renderer = glGetString(GL_RENDERER);
+    const GLubyte *vendor = glGetString(GL_VENDOR);
+    const GLubyte *renderer = glGetString(GL_RENDERER);
 
-    // printf("Vendor : %s\n", vendor);
-    // printf("Device : %s\n", renderer);
+    printf("Vendor : %s\n", vendor);
+    printf("Device : %s\n", renderer);
+    
+    glfwSetWindowSizeCallback(window, WindowResizeCallback);
+    glfwSetMouseButtonCallback(window, WindowMouseCallback);
 
-    // glfwMakeContextCurrent(window);
-    // glfwSwapInterval(1); //wlacz v-sync
+    glfwSetScrollCallback(window, ScrollCallback);
+    glfwSetKeyCallback(window, KeyCallback);
 
-    // glfwSetCursorPosCallback(window, cursorPositionCallback);
-    // glfwSetMouseButtonCallback(window, mouseButtonCallback);
+    camera = Camera(window, width, height);
 
+    while(!glfwWindowShouldClose(window)){
 
-    // while(!glfwWindowShouldClose(window)){
+        glClear(GL_COLOR_BUFFER_BIT);
 
-    //     glClear(GL_COLOR_BUFFER_BIT);
+        camera.updateProjectionMatrix();
+        camera.SetWorldBounds(width, height);
+        tree->Draw();
 
-    //     glfwGetWindowSize(window , &width, &height);
-    //     glViewport(0, 0, width, height);
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
 
-    //     DrawPoints();
-    //     DrawLines();
+    delete tree;
 
-    //     glfwSwapBuffers(window);
-    //     glfwPollEvents();
-    // }
-
-    // glfwDestroyWindow(window);
-
-    // glfwTerminate();
+    glfwDestroyWindow(window);
+    glfwTerminate();
 
     return 0;
 }
 
-void DrawPoints(){
+void WindowResizeCallback(GLFWwindow *window, int w, int h){
 
-    glPointSize(5);
-    glColor3f(1,0,0);
+    width = w;
+    height = h;
 
-    glBegin(GL_POINTS);
-
-    for(auto &element : points){
-        glVertex2f(element.x, element.y);
-    }
-
-    glEnd();
-}
-
-
-void DrawLines(){
-
-    glColor3f(0xFF,0xFF,0xFF);
-
-
-    glBegin(GL_LINE_LOOP);
-
-    for(int i=1 ; i < points.size(); i++){
-
-        glVertex2f(points[i-1].x, points[i-1].y);
-        glVertex2f(points[i].x, points[i].y);
+    glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
+    glViewport(0, 0, framebufferWidth, framebufferHeight);
     
+}
+
+void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+    // Adjust the camera's zoom based on scroll direction
+    if (yoffset > 0) {
+        camera.AdjustZoom(1.1f); // Increase zoom
+    } else if (yoffset < 0) {
+        camera.AdjustZoom(0.9f); // Decrease zoom
     }
-
-    glEnd();
-
+    camera.updateProjectionMatrix();
 }
 
+void WindowMouseCallback(GLFWwindow *window, int button, int action, int mods){
 
-static void cursorPositionCallback(GLFWwindow* window, double xpos, double ypos){
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
 
-    double normalizedX = (2.0 * xpos / width) - 1.0;
-    double normalizedY = 1.0 - (2.0 * ypos / height);
+    // Calculate the world coordinates of the point relative to the camera position and zoom level.
+    double worldX = camera.position.x + (xpos - camera.worldBound.width / 2.0) / camera.zoom;
+    double worldY = camera.position.y - (ypos - camera.worldBound.height / 2.0) / camera.zoom;
 
-    mouseX = normalizedX;
-    mouseY = normalizedY;
-
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS){
+        Vector2 point(worldX, worldY);
+        tree->InsertObject(point);
+    }
+    
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS){
+        tree->Clean();
+    }
 }
 
-bool isDrawing = false;
-
-void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
-    if(action!=GLFW_PRESS)
-        return;
-
-    if (button == GLFW_MOUSE_BUTTON_LEFT) {
-
-        if(!isDrawing){
-            points.push_back(Vector2(mouseX, mouseY));
-            isDrawing = true;
-        }else{
-            points.push_back( Vector2(mouseX, mouseY));
-            isDrawing = false;
+void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+        // Adjust camera position based on key presses
+        if (key == GLFW_KEY_W) {
+            camera.Move(0.0, moveSpeed); // Move up (positive Y-axis)
+        } else if (key == GLFW_KEY_S) {
+            camera.Move(0.0, -moveSpeed); // Move down (negative Y-axis)
+        } else if (key == GLFW_KEY_A) {
+            camera.Move(-moveSpeed, 0.0); // Move left (negative X-axis)
+        } else if (key == GLFW_KEY_D) {
+            camera.Move(moveSpeed, 0.0); // Move right (positive X-axis)
         }
-
-
-    }else if(button == GLFW_MOUSE_BUTTON_RIGHT){
-        points.clear();
     }
 }

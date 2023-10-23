@@ -3,7 +3,6 @@
 
 #include <cmath>
 
-
 struct Vector2{
 
     float x;
@@ -11,13 +10,16 @@ struct Vector2{
 
     Vector2(){}
 
-    Vector2(const float &_x, const float &_y) : x(_x), y(_y){}
+    Vector2(const float &_x, const float &_y){
+        this->x=_x;
+        this->y=_y;
+    }
 
-    virtual float Magnitude(){
+    float Magnitude(){
         return sqrt(x*x+y*y);
     }
 
-    virtual float sqrMagnitude(){
+    float sqrMagnitude(){
         return x*x+y*y;
     }
 
@@ -105,8 +107,6 @@ struct Vector2{
     }
 
 //Operators
-
-    
 
     Vector2 operator+(const Vector2 &vector){
         return Vector2(x+vector.x, y+vector.y);

@@ -3,21 +3,29 @@
 
 #include "Vector2.h"
 
-struct Vector3 : protected Vector2{
+struct Vector3 : public Vector2{
 
     float z;
 
     Vector3(){}
 
-    Vector3(const float &_x, const float &_y, const float &_z) : Vector2(_x, _y), z(_z){}
-
-    Vector3(const float &_x, const float &_y) : Vector2(_x, _y), z(0){}
-
-    float Magnitude() override{
-        return sqrt(x*x+y*y+z*z);
+    Vector3(const float &_x, const float &_y, const float &_z){
+        this->x=_x;
+        this->y=_y;
+        this->z=_z;
     }
 
-    float sqrMagnitude() override{
+    Vector3(const float &_x, const float &_y){
+        this->x=_x;
+        this->y=_y;
+        this->z=0;
+    }
+
+    float Magnitude(){
+        return sqrt(x*x + y*y + z*z);
+    }
+
+    float sqrMagnitude(){
         return x*x+y*y+z*z;
     }
 
