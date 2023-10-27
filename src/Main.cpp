@@ -1,7 +1,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-
 #ifdef __APPLE__
     #include <OpenGL/gl.h>
 #else
@@ -12,18 +11,15 @@
 int width=640, height=480;
 int framebufferWidth, framebufferHeight;
 
-float moveSpeed = 0.2f;
+float moveSpeed = 0.02f;
 
 #include "QuadTree.h"
-#include "Camera.h"
-
-Camera camera;
+#include <GLFW/glfw3.h>
 
 QuadTree *tree;
 
 void WindowResizeCallback(GLFWwindow *window, int w, int h);
 void WindowMouseCallback(GLFWwindow *window, int button, int action, int mods);
-void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 int main(int argc, char *argv[]){
@@ -54,19 +50,25 @@ int main(int argc, char *argv[]){
     
     glfwSetWindowSizeCallback(window, WindowResizeCallback);
     glfwSetMouseButtonCallback(window, WindowMouseCallback);
-
-    glfwSetScrollCallback(window, ScrollCallback);
     glfwSetKeyCallback(window, KeyCallback);
 
-    camera = Camera(window, width, height);
+    std::list<Vector2> points;
 
     while(!glfwWindowShouldClose(window)){
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        camera.updateProjectionMatrix();
-        camera.SetWorldBounds(width, height);
-        tree->Draw();
+        tree->GetAllObjects(points);
+
+        glPointSize(5.0f);
+
+        glBegin(GL_POINTS);
+            for(auto const point : points){
+                glVertex2f(point.x, point.y);
+            }
+        glEnd();
+
+        points.clear();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -87,17 +89,6 @@ void WindowResizeCallback(GLFWwindow *window, int w, int h){
 
     glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
     glViewport(0, 0, framebufferWidth, framebufferHeight);
-    
-}
-
-void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    // Adjust the camera's zoom based on scroll direction
-    if (yoffset > 0) {
-        camera.AdjustZoom(1.1f); // Increase zoom
-    } else if (yoffset < 0) {
-        camera.AdjustZoom(0.9f); // Decrease zoom
-    }
-    camera.updateProjectionMatrix();
 }
 
 void WindowMouseCallback(GLFWwindow *window, int button, int action, int mods){
@@ -106,8 +97,8 @@ void WindowMouseCallback(GLFWwindow *window, int button, int action, int mods){
     glfwGetCursorPos(window, &xpos, &ypos);
 
     // Calculate the world coordinates of the point relative to the camera position and zoom level.
-    double worldX = camera.position.x + (xpos - camera.worldBound.width / 2.0) / camera.zoom;
-    double worldY = camera.position.y - (ypos - camera.worldBound.height / 2.0) / camera.zoom;
+    double worldX = (2.0f * xpos) / width - 1.0f;
+    double worldY = 1.0f - (2.0f *ypos ) / height;
 
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS){
         Vector2 point(worldX, worldY);
@@ -122,14 +113,8 @@ void WindowMouseCallback(GLFWwindow *window, int button, int action, int mods){
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (action == GLFW_PRESS || action == GLFW_REPEAT) {
         // Adjust camera position based on key presses
-        if (key == GLFW_KEY_W) {
-            camera.Move(0.0, moveSpeed); // Move up (positive Y-axis)
-        } else if (key == GLFW_KEY_S) {
-            camera.Move(0.0, -moveSpeed); // Move down (negative Y-axis)
-        } else if (key == GLFW_KEY_A) {
-            camera.Move(-moveSpeed, 0.0); // Move left (negative X-axis)
-        } else if (key == GLFW_KEY_D) {
-            camera.Move(moveSpeed, 0.0); // Move right (positive X-axis)
+        if (key == GLFW_KEY_ESCAPE){
+            glfwSetWindowShouldClose(window, true);
         }
     }
 }

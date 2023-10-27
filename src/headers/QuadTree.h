@@ -2,6 +2,7 @@
 #define QUADTREE_H
 
 #include "Rect.h"
+#include <list>
 
 #define CAPACITY 8
 
@@ -14,7 +15,9 @@ struct QuadTree
 
     void Clean();
 
-    void Draw();
+    void Query(std::list<Vector2> &points, const Rect &worldBound);
+
+    void GetAllObjects(std::list<Vector2> &points);
 
     ~QuadTree();
 
@@ -40,13 +43,17 @@ struct QuadTree
             return rect.isInBound(_object);
         }
 
+        bool isInBound(const Rect& _object){
+            return rect.isInBound(_object);
+        }
+
     };
 
     QuadNode *root;
 
-    void Visit(const QuadNode *node);
     void DeleteQuadTree(QuadNode *node);
-    void DrawQuadTreeBoundaries(const QuadNode *node);
+    void AcquireObjects(std::list<Vector2> &points, const QuadNode * node);
+    void Query(const QuadNode *node, std::list<Vector2> &points, const Rect &worldBound);
     void InsertObject(QuadNode *node, const Vector2& _object);
     
 };

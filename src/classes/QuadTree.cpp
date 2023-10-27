@@ -13,6 +13,56 @@ void QuadTree::InsertObject(const Vector2& _object){
 
 }
 
+void QuadTree::Query(std::list<Vector2> &points, const Rect &worldBound){
+
+    Query(root, points, worldBound);
+
+}
+
+void QuadTree::Query(const QuadNode *node, std::list<Vector2> &points, const Rect &worldBound){
+    if(node==NULL || !((Rect)worldBound).isIntersecting(node->rect))
+        return;
+
+    if(((Rect)worldBound).isInBound(node->rect)){
+        for(int i =0; i< node->size; i++){
+            points.push_back(node->points[i]);
+        }
+        return;
+    }
+
+    Query(node->topLeft, points, worldBound);
+    Query(node->topRight, points, worldBound);
+    Query(node->bottomLeft, points, worldBound);
+    Query(node->bottomRight, points, worldBound);
+
+}
+
+void QuadTree::GetAllObjects(std::list<Vector2> &points){
+    AcquireObjects(points, root);
+}
+
+void QuadTree::AcquireObjects(std::list<Vector2> &points, const QuadNode * node){
+    if(node==NULL)
+        return;
+
+    for(int i =0; i< node->size; i++){
+        points.push_back(node->points[i]);
+    }
+
+    //Draw boundaries
+    glBegin(GL_LINE_LOOP);
+        glVertex2f(node->rect.x, node->rect.y);
+        glVertex2f(node->rect.x + node->rect.width, node->rect.y);
+        glVertex2f(node->rect.x + node->rect.width, node->rect.y + node->rect.height);
+        glVertex2f(node->rect.x, node->rect.y+node->rect.height);
+    glEnd();
+
+    AcquireObjects(points, node->topLeft);
+    AcquireObjects(points, node->topRight);
+    AcquireObjects(points, node->bottomLeft);
+    AcquireObjects(points, node->bottomRight);
+}
+
 void QuadTree::InsertObject(QuadNode *node, const Vector2& _object){
     if (node == NULL) {
         return;
@@ -43,49 +93,15 @@ void QuadTree::InsertObject(QuadNode *node, const Vector2& _object){
         }
     } else {
         // Insert the object into the current node
+
+        //Check if object is already present at that cooridantes
+        for(int i =0; i< node->size; i++){
+            if(node->points[i]==_object)
+                return;
+        }
+
         node->points[node->size++] = _object;
     }
-}
-
-void QuadTree::Draw(){
-    DrawQuadTreeBoundaries(root);
-    glBegin(GL_POINTS);
-        Visit(root);
-    glEnd();
-}
-
-void QuadTree::Visit(const QuadNode* node){
-    if(node==NULL)
-        return;
-
-    for(auto const &element : node->points){
-        glVertex2f(element.x, element.y);
-    }
-
-    Visit(node->topLeft);
-    Visit(node->topRight);
-    Visit(node->bottomLeft);
-    Visit(node->bottomLeft);
-}
-
-void QuadTree::DrawQuadTreeBoundaries(const QuadNode* node) {
-
-    if(node==NULL)
-        return;
-
-    //Draw current node boundary rectangle
-    glBegin(GL_LINE_LOOP);
-        glVertex2f(node->rect.x, node->rect.y);
-        glVertex2f(node->rect.x + node->rect.width, node->rect.y);
-        glVertex2f(node->rect.x + node->rect.width, node->rect.y + node->rect.height);
-        glVertex2f(node->rect.x, node->rect.y + node->rect.height);
-    glEnd();
-
-    //Draw all childs of current node
-    DrawQuadTreeBoundaries(node->topLeft);
-    DrawQuadTreeBoundaries(node->topRight);
-    DrawQuadTreeBoundaries(node->bottomLeft);
-    DrawQuadTreeBoundaries(node->bottomRight);
 }
 
 void QuadTree::DeleteQuadTree(QuadNode* node) {
