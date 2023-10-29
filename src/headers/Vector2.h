@@ -47,9 +47,9 @@ struct Vector2{
     }
 
     static Vector2 Lerp(const Vector2& vectorA, const Vector2& vectorB, const float &t){
-        
-        float step = std::max(t, 1.0f);
-        step = std::max(step, 0.0f);
+
+        float step = std::fmax(t, 1.0f);
+        step = std::fmax(step, 0.0f);
 
         float lerpX = vectorA.x + (vectorB.x-vectorA.x)*step;
         float lerpY = vectorA.y + (vectorB.y-vectorA.y)*step;
@@ -65,24 +65,24 @@ struct Vector2{
 
     static Vector2 Max(const Vector2 &vectorA, const Vector2 &vectorB){
 
-        float xMax = std::max(vectorA.x, vectorB.x);
-        float yMax = std::max(vectorA.y, vectorB.y);
+        float xMax = std::fmax(vectorA.x, vectorB.x);
+        float yMax = std::fmax(vectorA.y, vectorB.y);
 
         return Vector2(xMax, yMax);
     }
 
     static Vector2 Min(const Vector2 &vectorA, const Vector2 &vectorB){
 
-        float xMin = std::min(vectorA.x, vectorB.x);
-        float yMin = std::min(vectorA.y, vectorB.y);
+        float xMin = std::fmin(vectorA.x, vectorB.x);
+        float yMin = std::fmin(vectorA.y, vectorB.y);
 
         return Vector2(xMin, yMin);
     }
 
     static Vector2 MoveTowards(const Vector2 &current, const Vector2 &target, const float &t){
 
-        float step = std::max(t, 1.0f);
-        step = std::max(step, 0.0f);
+        float step = std::fmax(t, 1.0f);
+        step = std::fmax(step, 0.0f);
 
         Vector2 normalized = ((Vector2)target-(Vector2)current).Normalize();
         Vector2 forceVector = normalized*step;

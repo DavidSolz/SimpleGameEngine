@@ -1,5 +1,4 @@
 #include "QuadTree.h"
-#include "GL/gl.h"
 
 QuadTree::QuadTree(const float& _width, const float& _height){
 
