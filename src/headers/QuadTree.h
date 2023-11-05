@@ -6,24 +6,7 @@
 
 #define CAPACITY 8
 
-struct QuadTree
-{
-
-    QuadTree(const float& _width, const float & _height);
- 
-    void InsertObject(const Vector2& _object);
-
-    void Clean();
-
-    void Query(std::list<Vector2> &points, const Rect &worldBound);
-
-    void GetAllObjects(std::list<Vector2> &points);
-
-    ~QuadTree();
-
-    private:
-
-    struct QuadNode{
+struct QuadNode{
         int size;
         Rect rect;
         Vector2 points[CAPACITY];
@@ -48,6 +31,19 @@ struct QuadTree
         }
 
     };
+
+class QuadTree{
+public:
+    QuadTree(const float& _width, const float & _height);
+ 
+    void InsertObject(const Vector2& _object);
+    void Clean();
+    void Query(std::list<Vector2> &points, const Rect &worldBound);
+    void GetAllObjects(std::list<Vector2> &points);
+
+    ~QuadTree();
+
+private:
 
     QuadNode *root;
 

@@ -40,8 +40,9 @@ struct Vector3 : public Vector2{
 
         float nX = x*cos(angle) - y*sin(angle);
         float nY = x*sin(angle) + y*cos(angle);
+        float nZ = z;
 
-        return Vector3(nX, nY);
+        return Vector3(nX, nY, nZ);
     }
 
 //Static member functions

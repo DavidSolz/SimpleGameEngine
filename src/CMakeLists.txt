@@ -2,8 +2,9 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(GLEW REQUIRED)
 
-file(GLOB SOURCES LIST_DIRECTORIES true  *.cpp *.c)
+file(GLOB_RECURSE SOURCES LIST_DIRECTORIES true  *.cpp *.c)
 file(GLOB_RECURSE HEADER_FILES "headers/*.h")
 file(GLOB_RECURSE SOURCE_FILES "classes/*.cpp")
 
@@ -17,9 +18,11 @@ target_include_directories(${BINARY}_lib PUBLIC "headers")
 
 include_directories(${OPENGL_INCLUDE_DIRS})
 include_directories(${glfw3_INCLUE_DIRS})
+include_directories(${GLEW_INCLUDE_DIRS})
 include_directories(headers)
 
 target_link_libraries(${BINARY}_lib OpenGL::GL)
 target_link_libraries(${BINARY}_lib glfw)
+target_link_libraries(${BINARY}_lib GLEW::GLEW)
 target_link_libraries(${BINARY}_run ${BINARY}_lib)
 

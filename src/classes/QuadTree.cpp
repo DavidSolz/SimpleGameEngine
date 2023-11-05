@@ -1,5 +1,4 @@
 #include "QuadTree.h"
-#include "GL/gl.h"
 
 QuadTree::QuadTree(const float& _width, const float& _height){
 
@@ -48,14 +47,6 @@ void QuadTree::AcquireObjects(std::list<Vector2> &points, const QuadNode * node)
     for(int i =0; i< node->size; i++){
         points.push_back(node->points[i]);
     }
-
-    //Draw boundaries
-    glBegin(GL_LINE_LOOP);
-        glVertex2f(node->rect.x, node->rect.y);
-        glVertex2f(node->rect.x + node->rect.width, node->rect.y);
-        glVertex2f(node->rect.x + node->rect.width, node->rect.y + node->rect.height);
-        glVertex2f(node->rect.x, node->rect.y+node->rect.height);
-    glEnd();
 
     AcquireObjects(points, node->topLeft);
     AcquireObjects(points, node->topRight);

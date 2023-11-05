@@ -1,30 +1,25 @@
 
-#include <stdlib.h>
-#include <stdio.h>
 #ifdef __APPLE__
     #include <OpenGL/gl.h>
 #else
+    #include <GL/glew.h>
     #include <GL/gl.h>
+    #include <GLFW/glfw3.h>
 #endif
 
 
-int width=640, height=480;
-int framebufferWidth, framebufferHeight;
-
-float moveSpeed = 0.02f;
-
-#include "QuadTree.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include <GLFW/glfw3.h>
 
-QuadTree *tree;
+int width=640, height=480;
 
 void WindowResizeCallback(GLFWwindow *window, int w, int h);
-void WindowMouseCallback(GLFWwindow *window, int button, int action, int mods);
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-int main(int argc, char *argv[]){
+GLuint CreateTexture(int width, int height, unsigned char* data);
 
-    tree = new QuadTree(2.0f, 2.0f);
+int main(int argc, char *argv[]){
 
     if(!glfwInit()){
         printf("Cannot initialize GLFW\n");
@@ -40,7 +35,9 @@ int main(int argc, char *argv[]){
     }
 
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); //wlacz v-sync
+    glfwSwapInterval(1);
+
+    glOrtho(0, width, 0, height, -1.0f, 1.0f);
 
     const GLubyte *vendor = glGetString(GL_VENDOR);
     const GLubyte *renderer = glGetString(GL_RENDERER);
@@ -49,32 +46,35 @@ int main(int argc, char *argv[]){
     printf("Device : %s\n", renderer);
     
     glfwSetWindowSizeCallback(window, WindowResizeCallback);
-    glfwSetMouseButtonCallback(window, WindowMouseCallback);
     glfwSetKeyCallback(window, KeyCallback);
 
-    std::list<Vector2> points;
+    double lastTime = glfwGetTime();
+    int nbFrames = 0;
 
     while(!glfwWindowShouldClose(window)){
 
+        double currentTime = glfwGetTime();
+        nbFrames++;
+        if ( currentTime - lastTime >= 1.0 ){ 
+            
+            printf("%f ms/frame\n", 1000.0/double(nbFrames));
+            nbFrames = 0;
+            lastTime += 1.0;
+        }
+
         glClear(GL_COLOR_BUFFER_BIT);
 
-        tree->GetAllObjects(points);
-
-        glPointSize(5.0f);
-
-        glBegin(GL_POINTS);
-            for(auto const point : points){
-                glVertex2f(point.x, point.y);
-            }
-        glEnd();
-
-        points.clear();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+
+        GLenum error =glGetError();
+        if(error!=GL_NO_ERROR)
+            printf("Error : %d\n", error);
+
     }
 
-    delete tree;
 
     glfwDestroyWindow(window);
     glfwTerminate();
@@ -83,38 +83,34 @@ int main(int argc, char *argv[]){
 }
 
 void WindowResizeCallback(GLFWwindow *window, int w, int h){
-
-    width = w;
-    height = h;
-
-    glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
-    glViewport(0, 0, framebufferWidth, framebufferHeight);
+    glViewport(0, 0, w, h); //Change viewport size
 }
 
-void WindowMouseCallback(GLFWwindow *window, int button, int action, int mods){
-
-    double xpos, ypos;
-    glfwGetCursorPos(window, &xpos, &ypos);
-
-    // Calculate the world coordinates of the point relative to the camera position and zoom level.
-    double worldX = (2.0f * xpos) / width - 1.0f;
-    double worldY = 1.0f - (2.0f *ypos ) / height;
-
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS){
-        Vector2 point(worldX, worldY);
-        tree->InsertObject(point);
-    }
-    
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS){
-        tree->Clean();
-    }
-}
 
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-        // Adjust camera position based on key presses
+        
         if (key == GLFW_KEY_ESCAPE){
             glfwSetWindowShouldClose(window, true);
         }
+
     }
+}
+
+GLuint CreateTexture(int width, int height, unsigned char* data) {
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    return textureID;
 }
