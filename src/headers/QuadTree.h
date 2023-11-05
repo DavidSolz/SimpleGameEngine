@@ -4,6 +4,13 @@
 #include "Rect.h"
 #include <list>
 
+#ifdef __APPLE__
+    #include <OpenGL/gl.h>
+#else
+    #include "GL/gl.h"
+#endif
+
+
 #define CAPACITY 8
 
 struct QuadNode{
@@ -15,7 +22,7 @@ struct QuadNode{
         QuadNode *topRight;
         QuadNode *bottomLeft;
         QuadNode *bottomRight;
-        
+
         QuadNode(const float& _x, const float& _y, const float& _width, const float& _height){
             this->size=0;
             this->rect = Rect(_x, _y, _width, _height);
@@ -51,7 +58,7 @@ private:
     void AcquireObjects(std::list<Vector2> &points, const QuadNode * node);
     void Query(const QuadNode *node, std::list<Vector2> &points, const Rect &worldBound);
     void InsertObject(QuadNode *node, const Vector2& _object);
-    
+
 };
 
 #endif

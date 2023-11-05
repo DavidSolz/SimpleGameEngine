@@ -16,10 +16,6 @@
 *.dylib
 *.dll
 
-# Fortran module files
-*.mod
-*.smod
-
 # Compiled Static libraries
 *.lai
 *.la
@@ -37,6 +33,8 @@ build/CMakeFiles
 build/src
 build/tests
 build/.cmake
+build/lib/googletest/lib/cmake
+build/lib/googletest/lib/pkgconfig
 .vscode
 
 # Files
