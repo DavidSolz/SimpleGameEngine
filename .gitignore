@@ -28,13 +28,7 @@
 *.app
 
 # Directories
-build/googletest
-build/CMakeFiles
-build/src
-build/tests
-build/.cmake
-build/lib/googletest/lib/cmake
-build/lib/googletest/lib/pkgconfig
+build
 .vscode
 
 # Files

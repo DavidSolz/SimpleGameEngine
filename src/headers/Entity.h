@@ -1,20 +1,20 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-class Entity{
+using EntityId = unsigned int;
 
-    unsigned int entityID;
+struct Entity{
 
-public:
-
-    Entity(const unsigned int& _entityId){
+    Entity(const EntityId& _entityId){
         this->entityID = _entityId;
     }
 
-    unsigned int GetEntityId(){
+    EntityId GetEntityId(){
         return entityID;
     }
 
+private:
+    EntityId entityID;
 };
 
 #endif
