@@ -1,28 +1,43 @@
-set(BINARY ${CMAKE_PROJECT_NAME})
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(GLEW REQUIRED)
 
-file(GLOB_RECURSE SOURCES LIST_DIRECTORIES true  *.cpp *.c)
-file(GLOB_RECURSE HEADER_FILES "headers/*.h")
-file(GLOB_RECURSE SOURCE_FILES "classes/*.cpp")
+file(GLOB_RECURSE HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/**/*.h"
+)
 
-add_executable(${BINARY}_run ${SOURCES})
+file(GLOB_RECURSE SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp"
+)
 
-set_property(TARGET ${BINARY}_run PROPERTY CXX_STANDARD 17)
+# message(STATUS "Headers:")
+# foreach(header ${HEADERS})
+#     message(STATUS "  ${header}")
+# endforeach()
 
-add_library(${BINARY}_lib SHARED ${SOURCES} ${HEADER_FILES} ${SOURCE_FILES})
+# message(STATUS "Sources:")
+# foreach(source ${SOURCES})
+#     message(STATUS "  ${source}")
+# endforeach()
 
-target_include_directories(${BINARY}_lib PUBLIC "headers")
+add_library(${LIB_NAME}_lib SHARED ${SOURCES} ${HEADERS})
 
-include_directories(${OPENGL_INCLUDE_DIRS})
-include_directories(${glfw3_INCLUE_DIRS})
-include_directories(${GLEW_INCLUDE_DIRS})
-include_directories(headers)
+set_property(TARGET ${LIB_NAME}_lib PROPERTY CXX_STANDARD 17)
 
-target_link_libraries(${BINARY}_lib OpenGL::GL)
-target_link_libraries(${BINARY}_lib glfw)
-target_link_libraries(${BINARY}_lib GLEW::GLEW)
-target_link_libraries(${BINARY}_run ${BINARY}_lib)
+target_include_directories(${LIB_NAME}_lib PUBLIC
+    ${OPENGL_INCLUDE_DIRS}
+    ${glfw3_INCLUDE_DIRS}
+    ${GLEW_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/Headers  
+)
 
+target_link_libraries(${LIB_NAME}_lib 
+    OpenGL::GL 
+    glfw 
+    GLEW::GLEW
+)
+
+add_executable(${PROJECT_NAME}_run Main.cpp)

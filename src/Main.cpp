@@ -1,24 +1,31 @@
 
-#include <stdio.h>
-
 #include "RenderSystem.h"
+
+const int width = 640;
+const int height = 480;
+
 
 int main(int argc, char *argv[]){
 
     EntityManager entityManager;
-    ComponentManager componentManager;
 
     RenderSystem renderSystem;
 
-    Entity e1 = entityManager.CreateEntity();
-    Transform t={Vector3(1.0f,1.0f), Vector3(0.0f,0.0f)};
-    componentManager.AddComponent(e1.GetEntityId(), t);
+    Entity* e1 = entityManager.CreateEntity();
+    Transform* t = e1->AddComponent<Transform>();
 
-    Entity e2 = entityManager.CreateEntity();
-    
-    componentManager.AddComponent(e2.GetEntityId(), Transform());
+    t->position = Vector3(width/2.0f, height/2.0f);
 
-    renderSystem.Update(entityManager, componentManager);
+    if(!renderSystem.Initialize(width, height))
+        return -1;
+
+    GLFWwindow * window = renderSystem.GetWindow();
+
+    while(!glfwWindowShouldClose(window)){
+
+        renderSystem.Update(entityManager);
+
+    }
 
     return 0;
 }

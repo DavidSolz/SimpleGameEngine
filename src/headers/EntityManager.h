@@ -8,14 +8,21 @@ class EntityManager{
 
 public:
 
-    Entity CreateEntity(){
+    Entity* CreateEntity(){
         EntityId id = nextEntityId++;
-        Entity entity(id);
+        Entity* entity = new Entity(id);
         entities.push_back(entity);
         return entity;
     }
 
-    std::vector<Entity> entities;
+    ~EntityManager(){
+        for(Entity* entity : entities){
+            if(entity)
+                delete entity;
+        }
+    }
+
+    std::vector<Entity*> entities;
 private:
     EntityId nextEntityId = 1;
 };

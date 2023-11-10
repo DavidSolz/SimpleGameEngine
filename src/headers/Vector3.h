@@ -7,7 +7,11 @@ struct Vector3 : public Vector2{
 
     float z;
 
-    Vector3(){}
+    Vector3(){
+        this->x=0;
+        this->y=0;
+        this->z=0;
+    }
 
     Vector3(const float &_x, const float &_y, const float &_z){
         this->x=_x;
@@ -55,13 +59,14 @@ struct Vector3 : public Vector2{
         float deltaX = vectorA.x-vectorB.x;
         float deltaY = vectorA.y-vectorB.y;
         float deltaZ = vectorA.z-vectorB.z;
+
         return sqrt(deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ);
     }
 
     static Vector3 Lerp(const Vector3& vectorA, const Vector3& vectorB, const float &t){
         
-        float step = std::max(t, 1.0f);
-        step = std::max(step, 0.0f);
+        float step = std::fmin(t, 1.0f);
+        step = std::fmax(step, 0.0f);
 
         float lerpX = vectorA.x + (vectorB.x-vectorA.x)*step;
         float lerpY = vectorA.y + (vectorB.y-vectorA.y)*step;
@@ -98,7 +103,7 @@ struct Vector3 : public Vector2{
 
     static Vector3 Reflect(const Vector3 & vector, const Vector3 &planeNormal){
 
-        Vector3 projection = (Vector3)planeNormal * (Vector3::Dot(vector, planeNormal)/Vector3::Dot(planeNormal, planeNormal));
+        Vector3 projection = (Vector3)planeNormal * (Dot(vector, planeNormal)/Dot(planeNormal, planeNormal));
         Vector3 reflection = (Vector3)vector - projection * 2.0f;
 
         return reflection;

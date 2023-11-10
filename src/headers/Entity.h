@@ -1,9 +1,13 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include "GameObject.h"
+
 using EntityId = unsigned int;
 
-struct Entity{
+class Entity : public GameObject{
+
+public:
 
     Entity(const EntityId& _entityId){
         this->entityID = _entityId;

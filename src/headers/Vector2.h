@@ -8,7 +8,10 @@ struct Vector2{
     float x;
     float y;
 
-    Vector2(){}
+    Vector2(){
+        this->x=0;
+        this->y=0;
+    }
 
     Vector2(const float &_x, const float &_y){
         this->x=_x;
@@ -46,9 +49,13 @@ struct Vector2{
         return vectorALength*vectorBLength*cos(angleBetweenVectors);
     }
 
+    static Vector2 Hadamard(const Vector2 &vectorA, const Vector2 &vectorB){
+        return Vector2(vectorA.x*vectorB.x, vectorA.y*vectorB.y);
+    }
+
     static Vector2 Lerp(const Vector2& vectorA, const Vector2& vectorB, const float &t){
 
-        float step = std::fmax(t, 1.0f);
+        float step = std::fmin(t, 1.0f);
         step = std::fmax(step, 0.0f);
 
         float lerpX = vectorA.x + (vectorB.x-vectorA.x)*step;
@@ -81,7 +88,7 @@ struct Vector2{
 
     static Vector2 MoveTowards(const Vector2 &current, const Vector2 &target, const float &t){
 
-        float step = std::fmax(t, 1.0f);
+        float step = std::fmin(t, 1.0f);
         step = std::fmax(step, 0.0f);
 
         Vector2 normalized = ((Vector2)target-(Vector2)current).Normalize();
@@ -118,6 +125,10 @@ struct Vector2{
 
     Vector2 operator*(const float &scalar){
         return Vector2(x*scalar, y*scalar);
+    }
+    
+    float operator*(const Vector2 &vector){
+        return x*vector.y - y*vector.x;
     }
 
     Vector2 operator/(const float &scalar){

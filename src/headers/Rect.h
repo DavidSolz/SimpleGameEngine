@@ -8,8 +8,8 @@ struct Rect
     float x, y, width, height;
 
     Rect(){
-        x=1.0f;
-        y=1.0f;
+        x=0.0f;
+        y=0.0f;
         width=1.0f;
         height=1.0f;
     }
