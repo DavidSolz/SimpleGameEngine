@@ -1,14 +1,15 @@
 #ifndef RENDERSYSTEM_H
 #define RENDERSYSTEM_H
 
-#include "EntityManager.h"
 #include <stdio.h>
-#include "Transform.h"
-#include "Entity.h"
-
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
+
+#include "EntityManager.h"
+#include "Transform.h"
+#include "Entity.h"
+#include "Timer.h"
 
 #define test_width 5
 #define test_height 5
@@ -22,7 +23,7 @@ public:
         glClear(GL_COLOR_BUFFER_BIT);
 
         glBegin(GL_QUADS);
-            for (Entity* entity : entityManager.entities) {
+            for (Entity* entity : entityManager.GetAllEntities()) {
                 Transform* transform = entity->GetComponent<Transform>();
 
                 if (!transform)
@@ -65,6 +66,8 @@ public:
             return false;
         }
 
+        timer = Timer::GetInstance();
+
         return true;
     }
 
@@ -80,6 +83,7 @@ public:
 
 private:
     GLFWwindow * window;
+    Timer * timer;
 };
 
 

@@ -15,6 +15,10 @@ public:
         return entity;
     }
 
+    std::vector<Entity*> GetAllEntities() const{
+        return entities;
+    }
+
     ~EntityManager(){
         for(Entity* entity : entities){
             if(entity)
@@ -22,8 +26,8 @@ public:
         }
     }
 
-    std::vector<Entity*> entities;
 private:
+    std::vector<Entity*> entities;
     EntityId nextEntityId = 1;
 };
 
