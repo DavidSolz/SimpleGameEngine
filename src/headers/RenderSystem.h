@@ -2,8 +2,17 @@
 #define RENDERSYSTEM_H
 
 #include <stdio.h>
-#include <GL/glew.h>
+
+#ifdef __APPLE__
+
+#include <OpenGL/gl.h>
+
+#else
+
 #include <GL/gl.h>
+
+#endif
+
 #include <GLFW/glfw3.h>
 
 #include "EntityManager.h"
@@ -41,11 +50,11 @@ public:
     }
 
     bool Initialize(const int & width, const int &height){
-        
+
         if(!glfwInit()){
             printf("Cannot create initialize GLFW.\n");
         }
-        
+
         window = glfwCreateWindow(width, height, "Window", NULL, NULL);
 
         if(!window){
@@ -59,12 +68,6 @@ public:
         glfwSwapInterval(1);
 
         glOrtho(0, width, 0, height, -1.0f, 1.0f);
-        if (glewInit() != GLEW_OK) {
-            glfwDestroyWindow(window);
-            glfwTerminate();
-            fprintf(stderr, "Failed to initialize GLEW\n");
-            return false;
-        }
 
         timer = Timer::GetInstance();
 
