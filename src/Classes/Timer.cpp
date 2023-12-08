@@ -17,7 +17,7 @@ void Timer::TicTac(){
         frameCount = 0;
         lastTime = currentTime;
 
-        fprintf(stdout, "Frametime: %0.4f ms\r", deltaTime);
+        fprintf(stdout, "Frametime: %0.4fms\r", deltaTime);
         fflush(stdout);
     }
 }

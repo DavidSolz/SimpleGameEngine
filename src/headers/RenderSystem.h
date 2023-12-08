@@ -16,14 +16,14 @@
 #include <GLFW/glfw3.h>
 
 #include "EntityManager.h"
+#include "ComponentRegister.h"
 #include "IUpdateable.h"
 #include "Transform.h"
 #include "Color.h"
-#include "Entity.h"
 #include "Timer.h"
 
-#define test_width 5
-#define test_height 5
+#define test_width 1
+#define test_height 1
 
 #define GRID_VIEW
 
@@ -35,19 +35,26 @@ public:
         this->entityManager = _entityManager;
     }
 
+    void SetComponentRegister(ComponentRegister *_componentRegister){
+        this->componentRegister = _componentRegister;
+    }
+
     void Update() {
 
         timer->TicTac();
 
+        auto &transforms = componentRegister->GetComponentMap<Transform>();
+        auto &colors = componentRegister->GetComponentMap<Color>();
+
         glClear(GL_COLOR_BUFFER_BIT);
 
         glBegin(GL_QUADS);
-            for (Entity* entity : entityManager->GetAllEntities()) {
-                Transform* transform = entity->GetComponent<Transform>();
-                Color* color = entity->GetComponent<Color>();
+            for (const EntityId id : entityManager->GetAllEntities()) {
+                Transform * transform = static_cast<Transform*>(transforms[id]);
+                Color * color = static_cast<Color*>(colors[id]);
 
                 if (!transform)
-                        continue;
+                    continue;
 
                 if(color)
                     glColor3f(color->R, color->G, color->B);
@@ -94,13 +101,14 @@ public:
     }
 
     ~RenderSystem(){
-        fprintf(stdout, "Releasing resources.\n");
+        fprintf(stdout, "Releasing resources.     \n");
         glfwDestroyWindow(window);
         glfwTerminate();
     }
 
 private:
     EntityManager * entityManager;
+    ComponentRegister * componentRegister;
     GLFWwindow * window;
     Timer * timer;
 };
