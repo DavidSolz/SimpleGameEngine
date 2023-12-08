@@ -2,6 +2,8 @@
 #include "RenderSystem.h"
 #include "Timer.h"
 
+#include <thread>
+
 const uint32_t width = 640;
 const uint32_t height = 480;
 
@@ -34,8 +36,6 @@ int main(int argc, char *argv[]){
 
     systems.push_back(&renderSystem);
 
-    
-
     float radius = 20.0f;
 
     auto &transforms = componentManager.GetComponentMap<Transform>();
@@ -52,6 +52,7 @@ int main(int argc, char *argv[]){
     position.y = (2*Rand(seed)-1)*height/2.0f + height/2.0f;
 
     bool allowed = true;
+
 
     for(const EntityId id : entityManager.GetAllEntities()){
 
@@ -72,6 +73,12 @@ int main(int argc, char *argv[]){
     if(allowed){
         EntityId id = entityManager.CreateEntity();
         Transform * transform = componentManager.AddComponent<Transform>(id);
+        Color * color = componentManager.AddComponent<Color>(id);
+
+        color->R = Rand(seed);
+        color->G = Rand(seed);
+        color->B = Rand(seed);
+
         transform->position = position;
     }
 

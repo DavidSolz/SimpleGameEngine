@@ -32,6 +32,7 @@ target_include_directories(${LIB_NAME}_lib PUBLIC
     ${glfw3_INCLUDE_DIRS}
     ${GLEW_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/Headers  
+    ${CMAKE_CURRENT_SOURCE_DIR}/Components  
 )
 
 target_link_libraries(${LIB_NAME}_lib 
