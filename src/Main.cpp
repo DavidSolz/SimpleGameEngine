@@ -4,9 +4,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-const int width = 640;
-const int height = 480;
-
+const uint32_t width = 640;
+const uint32_t height = 480;
 
 int main(int argc, char *argv[]){
 
@@ -16,29 +15,35 @@ int main(int argc, char *argv[]){
 
     RenderSystem renderSystem;
 
-    for(int i=0 ;i < 100 ; i++){
-        Entity* e1 = entityManager.CreateEntity();
-        Transform* t = e1->AddComponent<Transform>();
-        float xPos = width/2.0f + (rand()/(float)RAND_MAX*10 -5)*30;
-        float yPos = height/2.0f + (rand()/(float)RAND_MAX*10 -5)*30;
-        t->position = Vector3(xPos, yPos);
-    }
-
-    if(!renderSystem.Initialize(width, height))
+    if(!renderSystem.Initialize(width, height, true))
         return -1;
 
-    GLFWwindow * window = renderSystem.GetWindow();
+    renderSystem.SetEntityManager(&entityManager);
 
-    Timer* timer = Timer::GetInstance();
+    std::vector<IUpdateable*> systems;
 
-    while(!glfwWindowShouldClose(window)){
+    systems.push_back(&renderSystem);
 
-        timer->TicTac();
-        renderSystem.Update(entityManager);
+    for(int i=0 ; i < 100 ; i++){
 
-        for(Entity *entity : entityManager.GetAllEntities()){
-            Transform* tr = entity->GetComponent<Transform>();
-            tr->position.x+=1.0f;
+        Entity* entity = entityManager.CreateEntity();
+        Transform* transform = entity->AddComponent<Transform>();
+        Color* color = entity->AddComponent<Color>();
+
+        float xPos = width/2.0f + (rand()/(float)RAND_MAX*10 -5)*30;
+        float yPos = height/2.0f + (rand()/(float)RAND_MAX*10 -5)*30;
+        transform->position = Vector3(xPos, yPos);
+
+        color->R = rand()/(float)RAND_MAX;
+        color->G = rand()/(float)RAND_MAX;
+        color->B = rand()/(float)RAND_MAX;
+
+    }
+
+    while(renderSystem.ShouldClose()){
+
+        for(IUpdateable* subsystem : systems){
+            subsystem->Update();
         }
 
     }

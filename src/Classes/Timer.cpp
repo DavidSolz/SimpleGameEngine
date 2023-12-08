@@ -5,6 +5,7 @@ static Timer* instance;
 Timer::Timer(){
     this->timeScale = 1.0f;
     this->lastTime = glfwGetTime();
+    this->deltaTime = 1.0f/60;
 }
 
 void Timer::TicTac(){
@@ -12,10 +13,12 @@ void Timer::TicTac(){
     frameCount++;
     float delta = currentTime - lastTime;
     if(delta >= 1.0f){
-            
-        deltaTime = delta/timeScale;
+        deltaTime = 1000.0f/frameCount;
         frameCount = 0;
         lastTime = currentTime;
+
+        fprintf(stdout, "Frametime: %0.4f ms\r", deltaTime);
+        fflush(stdout);
     }
 }
 
@@ -24,7 +27,7 @@ float Timer::GetTimeScale() const{
 }
 
 float Timer::GetDeltaTime() const{
-    return deltaTime;
+    return deltaTime * timeScale;
 }
 
 void Timer::SetTimeScale(const float& _timeScale){

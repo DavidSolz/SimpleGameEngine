@@ -5,8 +5,7 @@
 #include <unordered_map>
 #include <typeinfo>
 
-class GameObject
-{
+class GameObject {
 
 public:
     template<typename T>
@@ -16,7 +15,7 @@ public:
             return NULL;
         }
         T* component = new T();
-        components[typeid(T).hash_code()]= (void*)component;
+        components[typeid(T).hash_code()] = (void*)component;
         return component;
     }
 
@@ -36,7 +35,7 @@ public:
     }
 
     template<typename T>
-    T* GetComponent(){
+    T* GetComponent() const{
         auto it = components.find(typeid(T).hash_code());
         if (it != components.end()) {
             return static_cast<T*>(it->second);

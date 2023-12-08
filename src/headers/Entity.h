@@ -3,7 +3,7 @@
 
 #include "GameObject.h"
 
-using EntityId = unsigned int;
+using EntityId = uint32_t;
 
 class Entity : public GameObject{
 
