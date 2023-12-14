@@ -4,13 +4,6 @@
 #include "Rect.h"
 #include <list>
 
-#ifdef __APPLE__
-    #include <OpenGL/gl.h>
-#else
-    #include "GL/gl.h"
-#endif
-
-
 #define CAPACITY 8
 
 struct QuadNode{

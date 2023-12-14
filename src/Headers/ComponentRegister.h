@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <typeinfo>
 #include <unordered_map>
+#include <memory>
 
 using EntityId = uint32_t;
 
@@ -13,7 +14,15 @@ public:
 
     template<typename T>
     T* AddComponent(const EntityId& _entityId) {
-        auto &submap = components[typeid(T).hash_code()];
+
+        size_t code = typeid(T).hash_code();
+
+        auto submap_it = components.find(code);
+
+        if (submap_it == components.end())
+            components[code] = std::unordered_map<EntityId, void*>();
+
+        auto &submap = components[code];
 
         auto it = submap.find(_entityId);
 
@@ -21,8 +30,7 @@ public:
             return static_cast<T*>(it->second);
 
         T * component = new T();
-
-        submap[_entityId] = (void*)component;
+        submap[_entityId] = static_cast<void*>(component);
 
         return component;
     }
@@ -30,21 +38,25 @@ public:
     template<typename T>
     void RemoveComponent(const EntityId& _entityId) {
         auto it = components.find(typeid(T).hash_code());
+
         if (it == components.end())
             return;
 
         auto element = it->second.find(_entityId);
 
-        if (element == it->second.end())
-            return;
+        if (element != it->second.end()){
 
-        delete static_cast<T*>(element->second);
-        it->second.erase(element);
+            delete static_cast<T*>(element->second);
+            it->second.erase(element);
+
+        }
+
     }
 
     template<typename T>
-    std::unordered_map<EntityId, void*>& GetComponentMap(){
-        return components[typeid(T).hash_code()];
+    std::unordered_map<EntityId, T*>& GetComponentMap(){
+        size_t code = typeid(T).hash_code();
+        return reinterpret_cast<std::unordered_map<EntityId, T*>&>(components[code]);
     }
 
     template<typename T>

@@ -55,7 +55,7 @@ struct Vector3 : public Vector2{
         return vectorA.x*vectorB.x + vectorA.y*vectorB.y + vectorA.z*vectorB.z;
     }
 
-    static float Distance(const Vector3 &vectorA, const Vector3 &vectorB){
+    static float Distance(Vector3 &vectorA, Vector3 &vectorB){
         float deltaX = vectorA.x-vectorB.x;
         float deltaY = vectorA.y-vectorB.y;
         float deltaZ = vectorA.z-vectorB.z;

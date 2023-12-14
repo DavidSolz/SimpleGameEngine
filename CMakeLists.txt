@@ -7,6 +7,8 @@ project(GameEngine VERSION 1.1)
 
 set(LIB_NAME ${PROJECT_NAME})
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+
 add_subdirectory(src)
 
 target_include_directories(${LIB_NAME}_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

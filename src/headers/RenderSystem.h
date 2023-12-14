@@ -31,10 +31,6 @@ class RenderSystem : public IUpdateable{
 
 public:
 
-    void SetEntityManager(EntityManager *_entityManager){
-        this->entityManager = _entityManager;
-    }
-
     void SetComponentRegister(ComponentRegister *_componentRegister){
         this->componentRegister = _componentRegister;
     }
@@ -50,6 +46,7 @@ public:
 
         glBegin(GL_QUADS);
             for (const EntityId id : entityManager->GetAllEntities()) {
+
                 Transform * transform = static_cast<Transform*>(transforms[id]);
                 Color * color = static_cast<Color*>(colors[id]);
 
@@ -92,6 +89,8 @@ public:
         glOrtho(0, width, 0, height, -1.0f, 1.0f);
 
         timer = Timer::GetInstance();
+
+        entityManager = EntityManager::GetInstance();
 
         return true;
     }

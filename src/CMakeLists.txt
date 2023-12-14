@@ -33,6 +33,7 @@ target_include_directories(${LIB_NAME}_lib PUBLIC
     ${GLEW_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/Headers  
     ${CMAKE_CURRENT_SOURCE_DIR}/Components  
+    ${CMAKE_CURRENT_SOURCE_DIR}/Structures  
 )
 
 target_link_libraries(${LIB_NAME}_lib 
