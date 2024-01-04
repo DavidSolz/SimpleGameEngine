@@ -17,20 +17,20 @@ EntityId EntityManager::CreateEntity(){
         id = nextEntityId++;
     }
 
-    entities.push_back(id);
+    entities.AddElement(id);
     return id;
 }
 
-std::list<EntityId> EntityManager::GetAllEntities() const{
-    return entities;
+std::vector<EntityId> EntityManager::GetAllEntities(){
+    return entities.GetAllElements();
 }
 
 void EntityManager::RemoveEntity(const EntityId & _entityId){
 
-        auto it = std::find(entities.begin(), entities.end(), _entityId);
+        EntityId * it = entities.FindElement(_entityId);
 
-        if (it != entities.end()) {
-            entities.erase(it);
+        if (it != NULL) {
+            entities.DeleteElement(_entityId);
             queue.push_back(_entityId);
         }
 

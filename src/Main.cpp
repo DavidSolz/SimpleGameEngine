@@ -1,9 +1,10 @@
 
 #include "RenderSystem.h"
 #include "Timer.h"
-#include "BST.h"
 
 #include <queue>
+#include <bitset>
+#include <iostream>
 
 const uint32_t width = 640;
 const uint32_t height = 480;
@@ -34,7 +35,6 @@ int main(int argc, char *argv[]){
     while(renderSystem.ShouldClose()){
 
         renderSystem.Update();
-
 
     }
 

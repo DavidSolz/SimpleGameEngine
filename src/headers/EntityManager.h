@@ -2,8 +2,7 @@
 #define ENTITYMANAGER_H
 
 #include <list>
-#include <algorithm>
-#include <stdint.h>
+#include "BST.h"
 
 using EntityId = uint32_t;
 
@@ -13,7 +12,7 @@ public:
 
     EntityId CreateEntity();
 
-    std::list<EntityId> GetAllEntities() const;
+    std::vector<EntityId> GetAllEntities();
 
     void RemoveEntity(const EntityId & _entityId);
 
@@ -25,7 +24,7 @@ private:
 
     EntityManager();
 
-    std::list<EntityId> entities;
+    BST<EntityId> entities;
     std::list<EntityId> queue;
     EntityId nextEntityId = 0;
 };
